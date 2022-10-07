@@ -23,7 +23,7 @@ class List extends Component {
       this.setState({datetime: data})
     })
     socket.on('orderbook', (res) => {
-      this.setState({ bids: res.bids, asks: res.asks })
+      this.setState({...res});
     })
     socket.on('disconnect', () => this.setState({datetime: 'server disconnected'}))
 
@@ -50,13 +50,12 @@ class List extends Component {
 
   render() {
     const { bids, asks } = this.state;
-    const totalBidValue = Math.round(bids.reduce((sum, bid) => sum + bid[0] * bid[1], 0) * 100) / 100;
-    const totalAskSize = Math.round(asks.reduce((sum, ask) => sum + ask[1], 0) * 100) / 100;
+    const totalBidValue = Math.round(bids.reduce((sum, bid) => sum + +bid[0] * bid[1], 0) * 100) / 100;
+    const totalAskSize = Math.round(asks.reduce((sum, ask) => sum + +ask[1], 0) * 100) / 100;
 
     return (
       <div className="App">
-        <h1>Server time</h1>
-        <h1>{this.state.datetime}</h1>
+        <h1>Server time {this.state.datetime}</h1>
         <table border={1}>
           <thead>
           <tr>
@@ -83,6 +82,10 @@ class List extends Component {
                     <td>{totalBidValue}</td>
                     <td><b>Total Ask size</b></td>
                     <td>{totalAskSize}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Total Bid orders</b></td>
+                    <td colSpan={3}>{bids.length}</td>
                   </tr>
                 </tbody>
             ) : (
